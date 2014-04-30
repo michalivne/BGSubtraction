@@ -1,0 +1,10 @@
+#! /usr/bin/env zsh
+
+name=`uname -n`
+
+cd cpp/build && \
+make -j8 && \
+
+cd ../..
+
+tput bel
