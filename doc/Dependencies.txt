@@ -1,0 +1,16 @@
+This file contains dependencies list to compile the project.
+All packages were installed with MacPorts, unless stated otherwise.
+
+Required packages
+—————————————————
+CMake
+
+Python (2.7.2):
+	numpy
+	scipy
+	matplotlib
+
+BGSubtraction
+—————————————
+OpenCV
+Boost
