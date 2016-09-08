@@ -70,7 +70,7 @@ protected:
 template <class NUMPY_TYPE, int NUMPY_K_DIM, int CV_IMAGE_TYPE, int CV_MASK_TYPE>
 BGSBase<NUMPY_TYPE, NUMPY_K_DIM, CV_IMAGE_TYPE, CV_MASK_TYPE>::
 BGSBase(unsigned int rows, unsigned int cols, const std::string& name) :
-		name(name), img_bkgmodel(cv::Size(rows, cols), CV_IMAGE_TYPE) {
+		name(name), img_bkgmodel(rows, cols, CV_IMAGE_TYPE) {
 	if (name == "AdaptiveBackgroundLearning") {
 		bgs_filter = new AdaptiveBackgroundLearning;
 	} else if (name == "FrameDifferenceBGS") {
@@ -149,16 +149,20 @@ process(int* OUT_i, int* OUT_j, int* OUT_k, NUMPY_TYPE** OUT,
 		int IN_i, int IN_j, int IN_k, NUMPY_TYPE* IN) {
 
 	if (IN_k != NUMPY_K_DIM)
-		throw "Image matrix must be an NxMx3 matrix";
+		throw "Image matrix must be an NxMx3 matrix. Wrong number of channels";
+	if (IN_i != img_bkgmodel.rows)
+		throw "Image matrix must be an NxMx3 matrix. Wrong number of rows";
+	if (IN_j != img_bkgmodel.cols)
+		throw "Image matrix must be an NxMx3 matrix. Wrong number of cols";
 
 	(*OUT) = new NUMPY_TYPE[IN_i * IN_j];
 	(*OUT_i) = IN_i;
 	(*OUT_j) = IN_j;
 	(*OUT_k) = 1;
 
-	cv::Mat img_input(cv::Size(IN_i, IN_j), CV_IMAGE_TYPE, IN,
+	cv::Mat img_input(IN_i, IN_j, CV_IMAGE_TYPE, IN,
 			cv::Mat::AUTO_STEP);
-	cv::Mat img_mask(cv::Size(IN_i, IN_j), CV_MASK_TYPE, *OUT,
+	cv::Mat img_mask(IN_i, IN_j, CV_MASK_TYPE, *OUT,
 			cv::Mat::AUTO_STEP);
 
 	bgs_filter->process(img_input, img_mask, img_bkgmodel);
